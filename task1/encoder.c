@@ -1,30 +1,62 @@
 
+#include "util.h"
+
 #define SYS_WRITE 4
 #define SYS_READ 3
 #define SYS_EXIT 1
 
-#define STDOUT 1
 #define STDIN 0
+#define STDOUT 1
+#define STDERR 2
 
 int main(int argc, char** argv){
 	
-	system_call(SYS_WRITE,STDOUT, "hello world\n",12);
-
+	// system_call(SYS_WRITE,STDOUT, "hello world\n",12);
+	int debug = 0;
 	int i;
 	int j;
-	char arg[2];
 	char c[1];
-	char outputFileName[30];
+	char* sys_call;
+	char* sys_ret;
+	
+	if((argv[1] != 0) && (argv[1][0] == '-') && ((argv[1][1] == 'd'))){
+		debug = 1;
+	}
 
-	// system_call(SYS_READ,STDIN, c,1);
-	while((system_call(SYS_READ,STDIN, c,1)) != 0){
 
+	while((i = system_call(SYS_READ,STDIN, c,1)) != 0){
+
+		if(debug){
+
+			system_call(SYS_WRITE,STDERR, "system_call ", 12);
+			sys_call = itoa(SYS_READ);
+			system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
+			system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
+			sys_ret = itoa(i);
+			system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
+			system_call(SYS_WRITE,STDOUT, "\n",1);
+		}
+		
 		if(c[0] >= 65 && c[0] <= 90)
 			c[0] += 32;
 			
-		system_call(SYS_WRITE,STDOUT, c,1);
+		j = system_call(SYS_WRITE,STDOUT, c,1);
+
+		if(debug){
+
+			system_call(SYS_WRITE,STDOUT, "\n",1);
+			system_call(SYS_WRITE,STDERR, "system_call ", 12);
+			sys_call = itoa(SYS_WRITE);
+			system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
+			system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
+			sys_ret = itoa(j);
+			system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
+			system_call(SYS_WRITE,STDOUT, "\n",1);
+		}
 	}
+
 	system_call(SYS_WRITE,STDOUT, "\n",1);
+	
 
 
 
