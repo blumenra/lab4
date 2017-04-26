@@ -1,4 +1,4 @@
-#include "util.h"
+#include "../include/util.h"
 
 #define SYS_WRITE 4
 #define STDOUT 1
