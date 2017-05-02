@@ -49,6 +49,7 @@ int printParam(char* param, char* text, int textLen){
 int main(int argc, char** argv){
 	
 	int debug = 0;
+	int sFlagPos = 0;
 	char buf[8192];
 	ent *entp = (ent*) buf;	
 	int ret = 0;
@@ -58,6 +59,9 @@ int main(int argc, char** argv){
 	for(k=0; k < argc; k++){
 		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'd')){
 			debug = k;
+		}
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 's')){
+			sFlagPos = k;
 		}
 	}
 
@@ -72,13 +76,28 @@ int main(int argc, char** argv){
 
 	while(entp->len > 0){
 
-		printParam(entp->buf, "", 0);
-		if(debug){
+		if(sFlagPos){
+			char* name = entp->buf;
+			if(name[strlen(name)-1] == *argv[sFlagPos+1]){
 
-			printParam(itoa(entp->len), ", size: ", 8);
+				printParam(name, "", 0);
+				if(debug){
+
+					printParam(itoa(entp->len), ", size: ", 8);
+				}
+				system_call(SYS_WRITE,STDERR, "\n",1);
+			}
+		}
+		else{
+
+			printParam(entp->buf, "", 0);
+			if(debug){
+
+				printParam(itoa(entp->len), ", size: ", 8);
+			}
+			system_call(SYS_WRITE,STDERR, "\n",1);
 		}
 
-		system_call(SYS_WRITE,STDERR, "\n",1);
 
 		acc += entp->len;
 		entp = (ent*) (buf + acc);
