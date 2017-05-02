@@ -1,9 +1,9 @@
 
 #include "util.h"
 
-#define SYS_WRITE 4
-#define SYS_READ 3
 #define SYS_EXIT 1
+#define SYS_READ 3
+#define SYS_WRITE 4
 #define SYS_OPEN 5
 #define SYS_CLOSE 6
 
@@ -11,206 +11,119 @@
 #define STDOUT 1
 #define STDERR 2
 
-int main(int argc, char** argv){
+int useDebugger(int sys_call_param, int sys_ret_param, int debug){
 
-	int i;
-	int j;
+	char* sys_call;
+	char* sys_ret;
 
-	i = system_call(SYS_OPEN, "bb", 2, 0);
-	system_call(SYS_WRITE, STDOUT, itoa(i), 1);
-	// system_call(SYS_WRITE, STDOUT, "\n", 1);
-	j = system_call(SYS_WRITE, i, "alon", 4);
-	system_call(SYS_WRITE, STDOUT, itoa(j), 1);
+	if(debug){
+		system_call(SYS_WRITE,STDERR, "system_call ", 12);
+		sys_call = itoa(sys_call_param);
+		system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
+		system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
+		sys_ret = itoa(sys_ret_param);
+		system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
+		system_call(SYS_WRITE,STDERR, "\n",1);
+	}
 
 	return 0;
 }
 
-
-/*
 int main(int argc, char** argv){
 	
-	// system_call(SYS_WRITE,STDOUT, "hello world\n",12);
 	int debug = 0;
-	int fileOut = 0;
-	int fileIn = 0;
-	int i;
-	int j;
+	int fileOutPos = 0;
+	int fileInPos = 0;
+	int rFileDescriptor = 0;
+	int wFileDescriptor = 1;
+	int ret;
 	char c[1];
-	char* sys_call;
-	char* sys_ret;
-	char arg[2];
-	char c=0;
-	char outputFileName[30];
-	char* inputFileName;
-	// system_call(SYS_READ,STDIN, c,1);
+
 	
 	int k;
 	for(k=0; k < argc; k++){
-		if((strlen(agrv[k]) == 2) && (argv[i][0] == '-') && (argv[k][1] == 'd')){
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'd')){
 			debug = k;
 		}
-		if((strlen(agrv[k]) == 2) && (argv[i][0] == '-') && (argv[k][1] == 'i')){
-			fileIn = k;
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'i')){
+			fileInPos = k;
 		}
-		if((strlen(agrv[k]) == 2) && (argv[i][0] == '-') && (argv[k][1] == 'o')){
-			fileOut = k;
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'o')){
+			fileOutPos = k;
 		}
 	}
 
-	// if(argc < 2){
-			// while((i = system_call(SYS_READ,STDIN, c,1)) != 0){
+	if(fileInPos){
+		
+		ret = system_call(SYS_OPEN, argv[fileInPos+1], 2, 0644);
+		rFileDescriptor = ret;
 
-			// 	if(debug){
+		useDebugger(SYS_OPEN, ret, debug);
 
-			// 		system_call(SYS_WRITE,STDERR, "system_call ", 12);
-			// 		sys_call = itoa(SYS_READ);
-			// 		system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
-			// 		system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
-			// 		sys_ret = itoa(i);
-			// 		system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
-			// 		system_call(SYS_WRITE,STDOUT, "\n",1);
-			// 	}
-				
-			// 	if(c[0] >= 65 && c[0] <= 90)
-			// 		c[0] += 32;
-					
-			// 	j = system_call(SYS_WRITE,STDOUT, c,1);
-			// 	system_call(SYS_WRITE,STDOUT, "\n",1);
-
-			// 	if(debug){
-
-			// 		system_call(SYS_WRITE,STDERR, "system_call ", 12);
-			// 		sys_call = itoa(SYS_WRITE);
-			// 		system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
-			// 		system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
-			// 		sys_ret = itoa(j);
-			// 		system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
-			// 		system_call(SYS_WRITE,STDOUT, "\n",1);
-			// 	}
-			// }
-
-			// system_call(SYS_WRITE,STDOUT, "\n",1);
-		// }
-	// }
-	// else{
-		// if(argc > 2){
+		if(rFileDescriptor <= 0){
+			system_call(SYS_WRITE,STDERR, "The file does not exists. exiting...", 36);
+			system_call(SYS_WRITE,STDOUT, "\n",1);
 			
-			// for(i=1; i<argc; i++){
-				
-				if(fileIn){
-					
-					system_call(SYS_OPEN, argv[fileIn+1], 0, 1);
-					if(fileOut){
-						system_call(SYS_OPEN, argv[fileOut+1], 0, 1);
-						system_call(SYS_WRITE, argv[fileOut+1], 0, 1);
-					}
-					// inputFileName = argv[i+1];
-					// FILE* inputFile = fopen(argv[i+1], "r");
+			ret = system_call(SYS_EXIT, 0, 0, 0);
+			useDebugger(SYS_OPEN, ret, debug);
+		}
+	}
 
-					// if (inputFile == NULL) {
-					// 	fprintf(stderr, "Can't open input file %s!\n", argv[i+1]);
-					// 	return 1;
-					// }
+	if(fileOutPos){
 
-					// input = inputFile;
-					
-				}
-				else{
-					while((i = system_call(SYS_READ,STDIN, c,1)) != 0){
+		ret = system_call(SYS_OPEN, argv[fileOutPos+1], 102, 0644);
+		wFileDescriptor = ret;
+		useDebugger(SYS_OPEN, ret, debug);
+	}
 
-						if(debug){
 
-							system_call(SYS_WRITE,STDERR, "system_call ", 12);
-							sys_call = itoa(SYS_READ);
-							system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
-							system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
-							sys_ret = itoa(i);
-							system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
-							system_call(SYS_WRITE,STDOUT, "\n",1);
-						}
-						
-						if(c[0] >= 65 && c[0] <= 90)
-							c[0] += 32;
-							
-						j = system_call(SYS_WRITE,STDOUT, c,1);
-						system_call(SYS_WRITE,STDOUT, "\n",1);
+	if(debug){
 
-						if(debug){
+		char* sys_ret;
 
-							system_call(SYS_WRITE,STDERR, "system_call ", 12);
-							sys_call = itoa(SYS_WRITE);
-							system_call(SYS_WRITE,STDERR, sys_call, strlen(sys_call));
-							system_call(SYS_WRITE,STDERR, " was used. returned ", 20);
-							sys_ret = itoa(j);
-							system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
-							system_call(SYS_WRITE,STDOUT, "\n",1);
-						}
-					}
-
-					system_call(SYS_WRITE,STDOUT, "\n",1);
-				}
-			// 	else if(strcmp(argv[i],"-o")==0){
-					
-			// 		fprintf(output, "Enter output file:\n");
-			// 		fgets(outputFileName, 30, input);
-			// 		fprintf(output, "Enter text to encode:\n");
-			// 		FILE* outputFile = fopen(outputFileName, "w+");
-			// 		output = outputFile;
-
-			// 	}
-			// 	else if((argv[i][0] == 43) || (argv[i][0] == 45)){
-					
-			// 		for(j=0; j<2; j++){
-			// 			arg[j] = argv[i][j];
-			// 		}
-			// 	}
-			// }
-		// }
-
-		if(arg[0] == 43){
-			
-			while((c = fgetc(input))!=EOF){
-
-				if((c >= 97 && c <= 122) || (c >= 65 && c <= 90)){
-
-					if(c >= 65 && c <= 90)
-						c += 32;
-						
-					if(c+(arg[1]-48) > 122){
-						c = ((c+arg[1]-48)%122)+96;
-					}
-					else{
-						c += (arg[1]-48);
-					}
-				}
-				fputc(c, output);
-			}
-
+		system_call(SYS_WRITE,STDERR, "The input file path is: ", 24);
+		if(rFileDescriptor == 0)
+			system_call(SYS_WRITE,STDERR, "stdin\n", 6);
+		else{
+			sys_ret = argv[fileInPos+1];
+			system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
+			system_call(SYS_WRITE,STDERR, "\n", 1);
 		}
 
-		else if(arg[0] == 45){
-			
-			while((c = fgetc(input))!=EOF){
 
-				if((c >= 97 && c <= 122) || (c >= 65 && c <= 90)){
-					if(c >= 65 && c <= 90)
-						c += 32;
-						
-					if(c-(arg[1]-48) < 97){
-						c = (c-(arg[1]-48))+26;
-					}
-					else{
-						c -= (arg[1]-48);
-					}
-				}
-				fputc(c, output);
-			}
+		system_call(SYS_WRITE,STDERR, "The output file path is: ", 25);
+		if(wFileDescriptor == 1)
+			system_call(SYS_WRITE,STDERR, "stdout\n", 7);
+		else{
+
+			sys_ret = argv[fileOutPos+1];
+			system_call(SYS_WRITE,STDERR, sys_ret, strlen(sys_ret));
+			system_call(SYS_WRITE,STDERR, "\n", 1);
 		}
-	// }
+	}
+		
+	while((ret = system_call(SYS_READ,rFileDescriptor, c,1)) > 0){
 
-	fclose(input);
-	fclose(output);
+		useDebugger(SYS_READ, ret, debug);
+
+		
+		if(c[0] >= 'A' && c[0] <= 'Z')
+			c[0] += 32;
+			
+		ret = system_call(SYS_WRITE,wFileDescriptor, c,1);
+		
+		if(debug && (wFileDescriptor == STDOUT))
+			system_call(SYS_WRITE,STDOUT, "\n",1);
+
+		useDebugger(SYS_WRITE, ret, debug);
+	}
+
+
+	ret = system_call(SYS_CLOSE, rFileDescriptor);
+	useDebugger(SYS_CLOSE, ret, debug);
+	
+	ret = system_call(SYS_CLOSE, wFileDescriptor);
+	useDebugger(SYS_CLOSE, ret, debug);
 
 	return 0;
 }
-*/
