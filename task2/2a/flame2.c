@@ -12,6 +12,14 @@
 #define STDOUT 1
 #define STDERR 2
 
+typedef struct ent {
+	int inode;
+	int offset;
+	short len;
+	char buf[1];
+} ent;
+
+
 int useDebugger(int sys_call_param, int sys_ret_param, int debug){
 
 	char* sys_call;
@@ -30,8 +38,51 @@ int useDebugger(int sys_call_param, int sys_ret_param, int debug){
 	return 0;
 }
 
+int printParam(char* param, char* text, int textLen){
+
+		system_call(SYS_WRITE, STDOUT, text, textLen);
+		system_call(SYS_WRITE, STDOUT, param, strlen(param));
+
+		return 0;
+}
+
 int main(int argc, char** argv){
 	
 	int debug = 0;
+	char buf[8192];
+	ent *entp = (ent*) buf;	
+	int ret = 0;
+	int acc = 0;
+	int k;
+
+	for(k=0; k < argc; k++){
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'd')){
+			debug = k;
+		}
+	}
+
+	system_call(SYS_WRITE,STDOUT, "Flame 2 strikes!\n", 17);
+	ret = system_call(SYS_OPEN, "./", 0, 0);
+	
+	if(ret < 0)
+		system_call(SYS_EXIT, 0x55, 0, 0);
+	
+	
+	system_call(SYS_GETDENTS, ret, buf, 8192);
+
+	while(entp->len > 0){
+
+		printParam(entp->buf, "", 0);
+		if(debug){
+
+			printParam(itoa(entp->len), ", size: ", 8);
+		}
+
+		system_call(SYS_WRITE,STDERR, "\n",1);
+
+		acc += entp->len;
+		entp = (ent*) (buf + acc);
+	}
+
 	return 0;
 }
