@@ -12,6 +12,9 @@
 #define STDOUT 1
 #define STDERR 2
 
+extern void infection();
+
+
 typedef struct ent {
 	int inode;
 	int offset;
@@ -45,6 +48,8 @@ int printParam(char* param, char* text, int textLen){
 
 		return 0;
 }
+
+
 
 int main(int argc, char** argv){
 	

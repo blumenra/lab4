@@ -1,7 +1,12 @@
+section .rodata:
+    msg: DB "Hello, Infected File", 10, 0
+
 section .text
 global _start
 global system_call
+global infection
 extern main
+
 _start:
     pop    dword ecx    ; ecx = argc
     mov    esi,esp      ; esi = argv
@@ -38,3 +43,27 @@ system_call:
     add     esp, 4          ; Restore caller state
     pop     ebp             ; Restore caller state
     ret                     ; Back to caller
+
+
+code_start:
+    
+    call infection
+
+
+infection:
+    push    ebp             ; Save caller state
+    mov     ebp, esp
+    pushad                  ; Save some more caller state
+
+    mov     eax, 4          ; Copy function args to registers: leftmost...        
+    mov     ebx, 1          ; Next argument...
+    mov     ecx, msg        ; Next argument...
+    mov     edx, 22         ; Next argument...
+    int     0x80            ; Transfer control to operating system
+
+    mov eax, 0              ; return value void (0)
+
+    popad                   ; Restore caller state (registers)
+    pop     ebp             ; Restore caller state
+
+    ret
