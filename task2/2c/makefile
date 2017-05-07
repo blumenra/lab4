@@ -7,7 +7,7 @@ flame2: flame2.o  start.o  util.o
 
 
 start.o: start.s
-	nasm -g -f elf start.s -o start.o
+	nasm -g -f elf start.s -o start.o -l  list.lst
 
 
 flame2.o: flame2.c
@@ -21,4 +21,4 @@ util.o: util.c  util.h
 	clean
 
 clean:
-	rm -f ./*.o flame2
+	rm -f ./*.o flame2  list.lst
