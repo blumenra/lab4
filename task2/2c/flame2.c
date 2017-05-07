@@ -12,7 +12,9 @@
 #define STDOUT 1
 #define STDERR 2
 
-extern void infection();
+extern void code_start();
+extern void code_end();
+extern void infector(char* filePath);
 
 
 typedef struct ent {
