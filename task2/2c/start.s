@@ -4,10 +4,10 @@ section .rodata:
 section .text
 global _start
 global system_call
-;global infection
+global infection
 ;global code_start
 ;global code_end
-;global infector
+global infector
 extern main
 
 _start:
@@ -52,10 +52,6 @@ code_start:
     
     ; call infection
     ;   call infector
-
-    jmp code_end
-
-
 
 
 
