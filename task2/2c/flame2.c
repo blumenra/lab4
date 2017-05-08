@@ -79,7 +79,7 @@ int main(int argc, char** argv){
 	}
 
 	// system_call(SYS_WRITE,STDOUT, "Flame 2 strikes!\n", 17);
-	ret = system_call(SYS_OPEN, "./bin", 0, 0);
+	ret = system_call(SYS_OPEN, "./", 0, 0);
 	
 	if(ret < 0)
 		system_call(SYS_EXIT, 0x55, 0, 0);
